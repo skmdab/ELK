@@ -61,22 +61,29 @@ spec:
       labels:
         app: elk
     spec:
+      volumes:
+      - name: elasticsearch-pvc
+        persistentVolumeClaim:
+          claimName: elasticsearch-pvc
+      volumes:
+      - name: logstash-pvc
+        persistentVolumeClaim:
+          claimName: logstash-pvc
       conatiners:
       - name: elasticsearch
         image: elasticsearch
         ports:
         - containerPort: 9200
         - containerPort: 9300
+        volumeMounts:
+          - name: elasticsearch-pvc
+            path: /usr/share/elasticsearch/data
+        volumeMounts:
+        - name: logstash-pvc
+          path: /usr/share/logstash/data
         env:
         - name: discovery.type
           value: single-node
-          volumeMounts:
-          - name: elasticsearch-pvc
-            path: /usr/share/elasticsearch/data
-      volumes:
-      - name: elasticsearch-pvc
-        persistentVolumeClaim:
-          claimName: elasticsearch-pvc
       - name: kibana
         image: kibana
         ports:
@@ -88,13 +95,6 @@ spec:
         image: logstash
         ports:
         - containerPort: 5044
-      volumes:
-      - name: logstash-pvc
-        persistentVolumeClaim:
-          claimName: logstash-pvc
-        volumeMounts:
-        - name: logstash-pvc
-          path: /usr/share/logstash/data
 ---
 apiVersion: v1
 kind: Service
