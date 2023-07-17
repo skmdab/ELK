@@ -82,8 +82,8 @@ spec:
         - name: discovery.type
           value: single-node
         volumeMounts:
-          - name: elasticsearch-pvc
-            mountPath: /usr/share/elasticsearch/data
+        - name: elasticsearch-pvc
+          mountPath: /usr/share/elasticsearch/data
       - name: kibana
         image: kibana
         ports:
