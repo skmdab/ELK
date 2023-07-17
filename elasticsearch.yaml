@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Development
+metadata:
+  name: elasticsearch
+spec:
+  selectors:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      conatiners:
+      - name: elasticsearch
+        image: elasticsearch
+        ports:
+        - containerPort: 9200
+      - name: kibana
+        image: kibana
+        ports:
+        - containerPort: 5601
+      - name: logstash
+        image: logstash
+        ports:
+        - containerPort: 
+
