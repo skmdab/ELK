@@ -10,6 +10,7 @@ metadata:
   nfs:
     server: 10.0.0.21
     path: "/mnt/elasticsearch"
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,6 +23,7 @@ spec:
   resources:
     requests:
       capacity: 1Gi
+
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -34,6 +36,7 @@ spec:
   nfs:
     server: 10.0.0.21
     path: "/mnt/logstash"
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -96,6 +99,7 @@ spec:
         - name: logstash-pvc
           path: /usr/share/logstash/config/logstash.conf
           subPath: logstash.conf
+
 ---
 apiVersion: v1
 kind: Service
