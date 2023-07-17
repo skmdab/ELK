@@ -5,11 +5,11 @@ metadata:
 spec:
   selectors:
     matchLabels:
-      app: elasticsearch
+      app: elk
   template:
     metadata:
       labels:
-        app: elasticsearch
+        app: elk
     spec:
       conatiners:
       - name: elasticsearch
@@ -23,5 +23,30 @@ spec:
       - name: logstash
         image: logstash
         ports:
-        - containerPort: 
-
+        - containerPort: 5044
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: elk-pv
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteMany:
+  nfs:
+    server: 10.0.0.21
+    path: "/mnt/elk"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elk-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteMany:
+  resources:
+    requests:
+      capacity: 2Gi
+    
