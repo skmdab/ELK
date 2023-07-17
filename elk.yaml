@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: elk-pv
+  name: elasticsearch-pv
   storageClassName: manual
   capacity:
-    storage: 2Gi
+    storage: 1Gi
   accessModes:
   - ReadWriteMany:
   nfs:
@@ -14,14 +14,39 @@ metadata:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: elk-pvc
+  name: elasticsearch-pvc
 spec:
   storageClassName: manual
   accessModes:
   - ReadWriteMany:
   resources:
     requests:
-      capacity: 2Gi
+      capacity: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: logstash-pv
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteMany:
+  nfs:
+    server: 10.0.0.21
+    path: "/mnt/logstash"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: logstash-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteMany:
+  resources:
+    requests:
+      capacity: 1Gi
+
 ---
 apiVersion: apps/v1
 kind: Development
@@ -45,6 +70,13 @@ spec:
         env:
         - name: discovery.type
           value: single-node
+          volumeMounts:
+          - name: elasticsearch-pvc
+            path: /usr/share/elasticsearch/data
+      volumes:
+      - name: elasticsearch-pvc
+        persistentVolumeClaim:
+          claimName: elasticsearch-pvc
       - name: kibana
         image: kibana
         ports:
@@ -57,12 +89,12 @@ spec:
         ports:
         - containerPort: 5044
       volumes:
-      - name: elk-pvc
+      - name: logstash-pvc
         persistentVolumeClaim:
-          claimName: elk-pvc
+          claimName: logstash-pvc
         volumeMounts:
-        - name: elk-pvc
-          path: /usr/share/elasticsearch/data
+        - name: logstash-pvc
+          path: /usr/share/logstash/data
 ---
 apiVersion: v1
 kind: Service
