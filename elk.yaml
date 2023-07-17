@@ -1,31 +1,4 @@
 apiVersion: v1
-kind: Development
-metadata:
-  name: elasticsearch
-spec:
-  selectors:
-    matchLabels:
-      app: elk
-  template:
-    metadata:
-      labels:
-        app: elk
-    spec:
-      conatiners:
-      - name: elasticsearch
-        image: elasticsearch
-        ports:
-        - containerPort: 9200
-      - name: kibana
-        image: kibana
-        ports:
-        - containerPort: 5601
-      - name: logstash
-        image: logstash
-        ports:
-        - containerPort: 5044
----
-apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: elk-pv
@@ -49,4 +22,64 @@ spec:
   resources:
     requests:
       capacity: 2Gi
-    
+---
+apiVersion: apps/v1
+kind: Development
+metadata:
+  name: elk
+spec:
+  selector:
+    matchLabels:
+      app: elk
+  template:
+    metadata:
+      labels:
+        app: elk
+    spec:
+      conatiners:
+      - name: elasticsearch
+        image: elasticsearch
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        env:
+        - name: discovery.type
+          value: single-node
+      - name: kibana
+        image: kibana
+        ports:
+        - containerPort: 5601
+        env:
+        - name: ELASTICSEARCH_URL
+          value: http://localhost:9200
+      - name: logstash
+        image: logstash
+        ports:
+        - containerPort: 5044
+      volumes:
+      - name: elk-pvc
+        persistentVolumeClaim:
+          claimName: elk-pvc
+        volumeMounts:
+        - name: elk-pvc
+          path: /usr/share/elasticsearch/data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elk-svc
+spec:
+  selector:
+    app: elk
+  ports: 
+  - name: elk
+    port: 80
+    targetPort: 9200
+    nodePort: 31111
+  - name: elk-custom
+    port: 8080
+    targerPort: 9300
+    NodePort: 31112
+  type: NodePort
+
+
