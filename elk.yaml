@@ -9,7 +9,7 @@ metadata:
   - ReadWriteMany:
   nfs:
     server: 10.0.0.21
-    path: "/mnt/elk"
+    path: "/mnt/elasticsearch"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -104,14 +104,16 @@ spec:
   selector:
     app: elk
   ports: 
-  - name: elk
-    port: 80
+  - name: elasticsearch
+    port: 9200
     targetPort: 9200
-    nodePort: 31111
-  - name: elk-custom
-    port: 8080
+  - name: elasticsearch-custom
+    port: 9300
     targerPort: 9300
-    NodePort: 31112
+  - name: kibana
+    port: 5601
+    targetPort: 5601
+    NodePort: 31111
   type: NodePort
 
 
