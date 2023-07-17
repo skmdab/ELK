@@ -68,7 +68,6 @@ spec:
       - name: elasticsearch-pvc
         persistentVolumeClaim:
           claimName: elasticsearch-pvc
-      volumes:
       - name: logstash-pvc
         persistentVolumeClaim:
           claimName: logstash-pvc
